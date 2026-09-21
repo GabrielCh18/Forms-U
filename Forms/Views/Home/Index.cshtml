@@ -1,0 +1,213 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Un presente para ti...</title>
+    <style>
+            @@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Poppins:wght@400;600&display=swap');
+
+            body {
+                margin: 0;
+                padding: 0;
+                height: 100vh;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                background-color: #fdfbfb;
+                font-family: 'Poppins', sans-serif;
+                overflow: hidden;
+                flex-direction: column;
+            }
+
+            /* --- FASE 1: Texto inicial --- */
+            #texto-inicial {
+                font-size: 2rem;
+                color: #333;
+                text-align: center;
+                opacity: 0;
+                transition: opacity 1.5s ease;
+                position: absolute;
+                padding: 20px;
+            }
+
+            /* --- FASE 2: El Ramo --- */
+            #contenedor-ramo {
+                position: relative;
+                width: 300px;
+                height: 400px;
+                display: none; /* Oculto al inicio */
+                opacity: 0;
+                transition: opacity 1s ease;
+            }
+
+            /* El papel que envuelve el ramo (cono) */
+            .papel-ramo {
+                position: absolute;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 0;
+                height: 0;
+                border-left: 80px solid transparent;
+                border-right: 80px solid transparent;
+                border-top: 200px solid #d2b48c; /* Color papel kraft */
+                z-index: 1;
+                border-radius: 10px;
+            }
+
+            /* Lazo decorativo */
+            .lazo {
+                position: absolute;
+                bottom: 100px;
+                left: 50%;
+                transform: translateX(-50%);
+                font-size: 3rem;
+                z-index: 10;
+            }
+
+            /* Contenedor donde se inyectan las flores */
+            #zona-flores {
+                position: absolute;
+                top: 50px;
+                left: 50%;
+                width: 250px;
+                height: 250px;
+                transform: translateX(-50%);
+                z-index: 5;
+            }
+
+            /* Estilo individual de cada flor */
+            .flor {
+                position: absolute;
+                font-size: 3.5rem; /* Tamaño de la flor */
+                animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+                transform-origin: center;
+                opacity: 0;
+            }
+
+            /* --- FASE 3: El remate gracioso --- */
+            #texto-broma {
+                font-family: 'Caveat', cursive;
+                font-size: 3.5rem;
+                color: #d84315;
+                text-align: center;
+                margin-top: 20px;
+                opacity: 0;
+                transition: opacity 1s ease;
+                transform: translateY(20px);
+                z-index: 20;
+            }
+
+            /* Animaciones */
+            @@keyframes popIn {
+                0% {
+                    transform: scale(0) rotate(-45deg);
+                    opacity: 0;
+                }
+
+                100% {
+                    transform: scale(1) var(--rotacion);
+                    opacity: 1;
+                }
+            }
+
+            .show-broma {
+                opacity: 1 !important;
+                transform: translateY(0) !important;
+            }
+    </style>
+</head>
+<body>
+
+    <!-- Mensaje 1 -->
+    <div id="texto-inicial">En este día he querido hacerte este presente...</div>
+
+    <!-- El Ramo -->
+    <div id="contenedor-ramo">
+        <div class="papel-ramo"></div>
+        <div class="lazo">🎀</div>
+        <div id="zona-flores"></div>
+    </div>
+
+    <!-- Mensaje Final -->
+    <div id="texto-broma">Ahí está tu wea, pa que veas jajaja 🌻</div>
+
+    <script>
+            const textoInicial = document.getElementById('texto-inicial');
+            const contenedorRamo = document.getElementById('contenedor-ramo');
+            const zonaFlores = document.getElementById('zona-flores');
+            const textoBroma = document.getElementById('texto-broma');
+
+            // Configuración de cuántas flores tendrá el ramo
+            const totalFlores = 45;
+            let floresCreadas = 0;
+
+            // 1. Mostrar texto inicial
+            setTimeout(() => {
+                textoInicial.style.opacity = 1;
+            }, 500);
+
+            // 2. Ocultar texto inicial y mostrar el cono de papel
+            setTimeout(() => {
+                textoInicial.style.opacity = 0;
+
+                setTimeout(() => {
+                    textoInicial.style.display = 'none';
+                    contenedorRamo.style.display = 'block';
+                    // Pequeño truco para que la transición de opacidad funcione
+                    setTimeout(() => contenedorRamo.style.opacity = 1, 50);
+
+                    // Empezar a armar el ramo
+                    setTimeout(armarRamo, 800);
+                }, 1500); // Espera a que se desvanezca el texto
+            }, 4000); // El texto inicial dura 4 segundos en pantalla
+
+            // 3. Función para ir agregando flores una por una
+            function armarRamo() {
+                if (floresCreadas >= totalFlores) {
+                    // Cuando termina de armar el ramo, soltamos la broma
+                    setTimeout(() => {
+                        textoBroma.classList.add('show-broma');
+                    }, 800);
+                    return;
+                }
+
+                const flor = document.createElement('div');
+                flor.innerText = '🌻';
+                flor.classList.add('flor');
+
+                // Matemáticas para que las flores se agrupen en forma circular/ramo
+                const angulo = Math.random() * Math.PI * 2;
+                // Radio para que queden dentro del contenedor (más concentradas al centro)
+                const radio = Math.sqrt(Math.random()) * 100;
+
+                // Centro del contenedor (125px porque el ancho es 250px)
+                const centroX = 125 - 25; // -25 para centrar el emoji
+                const centroY = 125 - 25;
+
+                const posX = centroX + Math.cos(angulo) * radio;
+                const posY = centroY + Math.sin(angulo) * radio;
+
+                // Posicionamos la flor
+                flor.style.left = posX + 'px';
+                flor.style.top = posY + 'px';
+
+                // Le damos una rotación aleatoria para que se vea natural
+                const rotacion = `rotate(${Math.random() * 360}deg)`;
+                flor.style.setProperty('--rotacion', rotacion);
+
+                zonaFlores.appendChild(flor);
+                floresCreadas++;
+
+                // Llamamos a la función de nuevo cada 100 milisegundos
+                // (Puedes cambiar este número para que se arme más rápido o más lento)
+                setTimeout(armarRamo, 100);
+            }
+    </script>
+</body>
+</html>
